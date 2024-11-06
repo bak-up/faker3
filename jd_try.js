@@ -8,9 +8,7 @@ const axios = require('axios');
 const { SmashUtils } = require('./utils/smashUtils');
 const { setBaseCookie } = require('./utils/baseCookie');
 const { getJsToken } = require('./utils/jsToken.js');
-
 const cacheFilePath = path.join(__dirname, 'tokenCache.json');
-
 const $ = new Env('京东试用');
 const URL = 'https://api.m.jd.com/client.action';
 let trialActivityIdList = [];
@@ -82,7 +80,7 @@ $.innerKeyWords = [
 ];
 //下面很重要，遇到问题请把下面注释看一遍再来问
 let args_xh = {
-  h5st_server: process.env.H5ST_SERVER || 'https://jd1.zhx47.xyz',
+  h5st_server: process.env.H5ST_SERVER || '',
   /*
    * 控制一次最多跑几个号，默认10个
    */
@@ -196,10 +194,13 @@ let args_xh = {
    * */
   sendNum: process.env.JD_TRY_SENDNUM * 1 || 4,
 };
-
 !(async () => {
   await $.wait(500);
-  $.log('\n遇到问题请先看脚本内注释；解决不了可联系https://t.me/zhouya47\n');
+  $.log('\n遇到问题请先看脚本内注释\n');
+  if(!args_xh.h5st_server) {
+    console.log('请先在环境变量中配置H5ST接口变量：export H5ST_SERVER="你的接口" 例子：export H5ST_SERVER="http://192.168.2.1:3111" (不要后面的/h5st)');
+    return;
+  }
   await requireConfig();
   if (!$.cookiesArr[0]) {
     console.log($.name, '【提示】请先获取京东账号一cookie\n直接使用NobyDa的京东签到获取', 'https://bean.m.jd.com/');
@@ -356,7 +357,7 @@ async function try_apply(title, activityId) {
       },
       'x-api-eid-token': $.jsToken,
     },
-    '20241020185421353;1o2o2rcsbkd2oob3;35fa0;tk03wa89a1cc518n9ZP1SOIb8Pc1YYoGhRS77lgzvyvQJ2UgI7sI61yIMnWsVSbzlrknsxqwCUFtLWlyUGX9IwK4uCHZ;fbadddbc42bb81b641a319315b6e78dd;4.8;1729421661353;TKmWZt2OjOg7nNT9rNg6zNvKnNj7lOUOcOU6wNUO2uWLkSTOcO07zJwO2W0UqO0JhOg_0JgJxNjKjOwKx5T9zNQKjKjJxJT9kCjJiSjJyNUOcOU6Qlg90Bg50WUOMm0Oh2TJ0FD9zJQKdOA9z1jKwBA_kGTJyJDIdSwJdWjJ0BzO2uzOjRw5oRg_0WUOMm0OkeUIoGz53BQ7t9g-h2wO2uzOgNUO2uWL0Cf9MxDE09TIDRgF0W0I0ig7ydA_kNUO2uWL0OjKoxgB0W0I0_Q60WUOMmE32W0UmW0I02D50NUO2WUOMm0O0W0I06D50NUO2WUOMmEJkW0I0_D50NUO2WUOMmUK2uzOhCv_0WUO2W0UqWTOcOUJhNwO2WUO2uWLm6TOcOkKhNwO2WUO2uWLliUOcO0KhNwO2WUO2uWL0CzLleUK3BQ5tlwO2uzOlCv_0WUO2W0UqWTOcOk8fNUO2WUOMmEJ2uzOjlwO2WUO2uWLmW0I0mwO2WUO2uWLmW0I0Gg50WUO2W0UbV0I0Gw7xFP4xNUO2uWLZVUOMO09hGAKeOzJhCg_eKjJ3Fw80W0I0ST60WUO2W0UbV0I0WP60WUOMm0Oi_T42qTJgeA8-VkImeUKlWUBIVk6fZQ9oxgB0W0I0SA5jNUO2um4;8ca0bcf93cae914dfdd88b7cc3a6f4e4',
+    '20241024102328979;8v5eeh5lr1zk9er9;35fa0;tk03wc6231d3518nxa5SNv1G7xPveQBQ9ProecNhsUiJqMLXoJGTFmWAznDJpubNLB1gVxvi5YhTz3sB8_Xe8zgWthHs;280cd4752f7e2ee5a1e0cb41b512dff3;4.9;1729736608979;pjbMhjZd5WVdACUf56VeDWVS2TkdJrJdJrESJrpjh7Jj1jFfFmVd2XVf2HofIeYTImFf1rYdFq4eHeld4LoS6nFjLDIj7SnQEiVS0ipjLDrgJjIe4rIe7TYT5P4fJWod5T1TJiVd6nFS0nlSzjle6fFeJrJdJfUT1yVTIipjLDrgJnIgyzpe1uWS-GFSMWoRJrJdJTEjLrJp-jJO6XYZ0u1X-mYXjSEjLDIj_ulS9mFPJrpjh7JjGy1QDqWRJrJdJTlPJrpjh7ZMLrJp7rJdJLYOJipjLrpjh7JjJrJdJPYOJipjLrpjh7Jf5rJdJTYOJipjLrpjh7pfLDIj2XETJrpjLrJp-rojxjpe2iFjLrpjLDrg4Lojxj5f2iFjLrpjLDrg63pjxjJf2iFjLrpjLDrgJXIg6zpfMWlOC6FjLDIj6XETJrpjLrJp-rojxj5R0ipjLrpjh7pfLDIj46FjLrpjLDrg7rJdJ7FjLrpjLDrg7rJdJb1OJrpjLrJpwqJdJbFQGakNGipjLDrguqpjhjJhBDJhBDJjLDIj6rEjLrpjLD7NLDIj7qEjLrJp-jpVLf2YLfVTeqZSAGlQLT4U4nojYunjGy1QDqWRLXmXoq5dGy1QDqWRJrJdJnVO4ipjLD7N;c438f3c4dfb2e0b3d7d3c8a8ae4046b4',
   );
 
   setBaseCookie();
@@ -604,7 +605,7 @@ async function try_feedsList(tabId, page) {
       },
       'x-api-eid-token': $.jsToken,
     },
-    '20241020185331946;rdbso1cxc2kckcx8;35fa0;tk03w88961b8118nluC1DXb3DJMhGhAmD6LtSaZ85XeFEwgip5Y5pfJHB9iGxLTBVGXsi3oh9EbyayfKW5iC09GkS4Ty;4fd2fc17a1ef09a6bb36b9716c77b1ee;4.8;1729421611946;TKmWZt2Oe2f_rJg8kKQ4zRj7jNQ9kNUOcOU6wNUO2uWLkSTOcO07zJwO2W0UqO0JhOg_0JgJxNjKjOwKx5T9zNQKjKjJxJT9kCjJiSjJyNUOcOU6Qlg90Bg50WUOMm0Oh2TJ0FD9zJQKdOA9z1jKwBA_kGTJyJDIdSwJdWjJ0BzO2uzOjRw5oRg_0WUOMm0OkeUIoGz53BQ7t9g-h2wO2uzOgNUO2uWL0CQBlayDq1SImFgC0W0I0ig7ydA_kNUO2uWL0OjKoxgB0W0I0_Q60WUOMmE32W0UmW0I02D50NUO2WUOMm0O0W0I06D50NUO2WUOMmkJlW0I0_D50NUO2WUOMmUK2uzOhCv_0WUO2W0UqWTOcOUJhNwO2WUO2uWLf_TOcOkKhNwO2WUO2uWLliUOcO0KhNwO2WUO2uWL0CzLleUK3BQ5tlwO2uzOlCv_0WUO2W0UqWTOcOk8fNUO2WUOMmEJ2uzOjlwO2WUO2uWLmW0I0mwO2WUO2uWLmW0I0Gg50WUO2W0UbV0I0Gw7xFP4xNUO2uWLZVUOMO09hGAKeOzJhCg_eKjJ3Fw80W0I0ST60WUO2W0UbV0I0WP60WUOMm0Oi_T42qTJgeA8-VkImeUKlWUBIVk6fZQ9oxgB0W0I0SA5jNUO2um4;cd3b5aecc1a5b56a0af543c68634c201',
+    '20241024102328979;8v5eeh5lr1zk9er9;35fa0;tk03wc6231d3518nxa5SNv1G7xPveQBQ9ProecNhsUiJqMLXoJGTFmWAznDJpubNLB1gVxvi5YhTz3sB8_Xe8zgWthHs;280cd4752f7e2ee5a1e0cb41b512dff3;4.9;1729736608979;pjbMhjZd5WVdACUf56VeDWVS2TkdJrJdJrESJrpjh7Jj1jFfFmVd2XVf2HofIeYTImFf1rYdFq4eHeld4LoS6nFjLDIj7SnQEiVS0ipjLDrgJjIe4rIe7TYT5P4fJWod5T1TJiVd6nFS0nlSzjle6fFeJrJdJfUT1yVTIipjLDrgJnIgyzpe1uWS-GFSMWoRJrJdJTEjLrJp-jJO6XYZ0u1X-mYXjSEjLDIj_ulS9mFPJrpjh7JjGy1QDqWRJrJdJTlPJrpjh7ZMLrJp7rJdJLYOJipjLrpjh7JjJrJdJPYOJipjLrpjh7Jf5rJdJTYOJipjLrpjh7pfLDIj2XETJrpjLrJp-rojxjpe2iFjLrpjLDrg4Lojxj5f2iFjLrpjLDrg63pjxjJf2iFjLrpjLDrgJXIg6zpfMWlOC6FjLDIj6XETJrpjLrJp-rojxj5R0ipjLrpjh7pfLDIj46FjLrpjLDrg7rJdJ7FjLrpjLDrg7rJdJb1OJrpjLrJpwqJdJbFQGakNGipjLDrguqpjhjJhBDJhBDJjLDIj6rEjLrpjLD7NLDIj7qEjLrJp-jpVLf2YLfVTeqZSAGlQLT4U4nojYunjGy1QDqWRLXmXoq5dGy1QDqWRJrJdJnVO4ipjLD7N;c438f3c4dfb2e0b3d7d3c8a8ae4046b4',
   );
 
   try {
@@ -729,7 +730,7 @@ async function try_feedsList(tabId, page) {
   }
 }
 
-async function h5stSign(body, h5st, version = '4.8.2') {
+async function h5stSign(body, h5st, version = '4.9.1') {
   const options = {
     method: 'POST',
     url: `${args_xh.h5st_server}/h5st`,
@@ -742,7 +743,6 @@ async function h5stSign(body, h5st, version = '4.8.2') {
       h5st,
     },
   };
-
   const { data } = await axios.request(options);
   return data.body;
 }
